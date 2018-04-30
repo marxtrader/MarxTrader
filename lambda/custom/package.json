@@ -1,0 +1,25 @@
+{
+  "name": "marx-trader",
+  "version": "1.0.0",
+  "description": "real time quotes and trading",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cryptos",
+    "bitcoin",
+    "ethereum",
+    "alt-coins"
+  ],
+  "author": "Chris Ranni",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.6",
+    "aws-sdk": "2.211.0",
+    "bluebird": "^3.4.7",
+    "isomorphic-fetch": "^2.2.1",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5"
+  }
+}
