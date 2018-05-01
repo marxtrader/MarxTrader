@@ -54,7 +54,8 @@ const handlers = {
       speech = (`lets go ${userName} ,issue me a command`);
     } else {
       // Welcome User for the First Time
-      speech = (` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`);
+      speech = (`get ready, three, two, one, go.`)
+      //speech = (` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`);
     }
     self.response.speak(`${speech}`)
         .listen( `issue me another command`)
@@ -81,8 +82,8 @@ const handlers = {
       this.attributes['portfolio'] = constants.initPortfolio 
       this.attributes['watchlist'] = ['btcusd', 'ethusd','ltcusd'];
       this.attributes['userName'] = name;
-      //this.emit('LaunchRequest')
-     this.emit('AMAZON.HelpIntent');
+      this.emit('LaunchRequest')
+      //this.emit('AMAZON.HelpIntent');
 
     } else {
       speech = (`Sorry, I didn't recognise that name!, say my name is, and then your name`);
@@ -110,7 +111,7 @@ const handlers = {
     }
 
     if (portfolio.empty) {
-        self.response.speak(` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio, get in the game and buy something, issue me another command. `)
+        self.response.speak(` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio. get in the game and buy something, issue me another command. `)
             .listen(`issue me another command`)
             .cardRenderer(` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio, get in the game and buy something, issue me another command. `)
             .shouldEndSession(false)
@@ -129,9 +130,9 @@ const handlers = {
       .then(quotes => {
 
         let grossPL = 100000 - (portfolio.balance.costBasis - portfolio.balance.cash)
-        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. the profit or loss is  `
+        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. the profit or loss is $${portfolio.balance.bookedpl}. `
 
-        cardSpeech = cardSpeech + ` your balance is $${portfolio.balance.cash} in cash with a cost basis of $${portfolio.balance.costBasis} on your portfolio `
+        cardSpeech = cardSpeech + ` your balance is $${portfolio.balance.cash} in cash with a cost basis of $${portfolio.balance.costBasis} on your portfolio. `
 
         for (var i=0;i<quotes.length;i++) {
           profitLoss = precisionRound(((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis),2)
@@ -154,68 +155,6 @@ const handlers = {
         self.emit(':responseReady')
     })
   },
-
-  'PortfolioIntent' : function() { 
-
-    console.log("Event  : ",JSON.stringify(this.event))        
-
-    if (checkOrderReq(this.event)) { // check for a valid request with all parameters needed present
-    
-        let self = this;
-
-        let order = {}
-        let idx;
-
-        let portfolio = this.attributes['portfolio']        
-
-        order.symbol = (this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.name);
-
-        order.side = this.event.request.intent.slots.side.resolutions.resolutionsPerAuthority[0].values[0].value.name;
-
-        order.qty = parseInt(this.event.request.intent.slots.quantity.value,10);
-
-          // see if the order exists and if so grab the index and port object
-          // default to not found
-
-          if (portfolio.empty) {
-            idx = -1
-          } else {
-            for (let i =0; i < portfolio.balance.positions.length; i++) {
-              if (order.symbol == portfolio.balance.positions[i].symbol) {              
-                idx = i
-                break;
-              } else {
-                idx = -1
-              }
-            }
-          }
-
-          sendOrder(portfolio, order, idx, function(err, order, portfolio) {
-
-            if (err) {
-                portfolio.orders.push(order)
-                self.response.speak(` ${err} , issue me another command `)
-                  .listen(`issue me another command`)
-                  .cardRenderer(` ${err} , issue me another command `)
-                  .shouldEndSession(false)
-                self.emit(':responseReady') }
-            else {
-                  self.attributes['portfolio'] = portfolio
-                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state}, issue me another command `)
-                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}, issue me another command `)
-                    .listen(`issue me another command`)
-                    .shouldEndSession(false)
-                  self.emit(':responseReady')
-            }
-          })
-    } else {
-      self.response.speak(`sorry, you did not provide enough information to provide a response., try again or ask for help`) 
-          .listen(`try again or ask for help`)
-          .cardRenderer(`sorry, you did not provide enough information to provide a response., try again or ask for help`)
-          .shouldEndSession(false)
-      self.emit(':responseReady')
-    }
-  }, // End port intent
 
   'LaunchRequest' : function() {
     console.log('Launch Request intent: ',JSON.stringify(this.event))
@@ -366,19 +305,19 @@ const handlers = {
 
     let costBasis = 0.0;
     let profitLoss = 0.0;
-    // let totalpl = 0.0
+    let totalpl = 0.0;
 
     getQuotes(posList)
       .then(quotes => {
 
         let grossPL = 100000 - (portfolio.balance.costBasis - portfolio.balance.cash)
-        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. the profit or loss is  `
+        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. your booked profit or loss is $${portfolio.balance.bookedpl} `
 
         cardSpeech = cardSpeech + ` your balance is $${portfolio.balance.cash} in cash with a cost basis of $${portfolio.balance.costBasis} on your portfolio `
 
         for (var i=0;i<quotes.length;i++) {
           profitLoss = precisionRound(((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis),2)
-
+          totalpl += profitLoss
           if (profitLoss > 0) {
             speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss},`
 
@@ -390,6 +329,15 @@ const handlers = {
             cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss},`
           }
         }  
+
+        if (totalpl > 0) {
+          speech += `for a total profit of $${totalpl} `
+        } else if (totalpl < 0) {
+          speech += `for a total loss of $${totalpl} `
+        } else {
+          speech += ` with no realized profit or loss`
+        }
+        
         self.response.speak(` ${speech}. issue me another command `)
           .listen(`issue me another command`)
           .cardRenderer(` ${cardSpeech} , issue me another command `)
@@ -401,7 +349,8 @@ const handlers = {
   'BriefMeIntent' : function(){
     let self = this;
     let speech = ''
-    let watchlist = this.attributes['watchlist'];
+    //let positions = this.attributes['portfolio.balance.positions'];
+    
     getQuotes(watchlist)
       .then(quotes => {
         let speech=''
@@ -418,61 +367,6 @@ const handlers = {
   },
 
   'EditWatchList' : function() { 
-    console.log("Event  : ",JSON.stringify(this.event))
-    let speech =``
-    if (checkWlReq(this.event)) { // check for a valid request with all parameters needed present
-    
-        let self = this;
-        let watchlist = this.attributes['watchlist']        
-
-        const symbol = (this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.name);
-
-        const action = this.event.request.intent.slots.action.resolutions.resolutionsPerAuthority[0].values[0].value.name;
-
-        this.attributes['symbol'] = symbol
-        this.attributes['action'] = action
-
-        var idx = watchlist.indexOf(symbol);
-
-        if ((idx == -1 ) && (action == 'remove')) {
-            action = 'rejectremove'
-
-        } else if ((idx != -1 ) && (action == 'add')) {
-            action = 'rejectadd'
-
-        } else if ((idx == -1 ) && (action == 'add')) {
-            // add symbol to watch list
-            watchlist.push(symbol)
-            self.attributes['watchlist'] = watchlist
-
-        } else if ((idx != -1 ) && (action == 'remove')) {
-            // remove symbol from watch list
-            watchlist.splice(idx,1)
-            self.attributes['watchlist'] = watchlist
-        }
-    } else {
-      this.emit('Unhandled') // ill formated request
-    }
-    switch (action) {
-      case 'rejectremove' :
-        speech = (':ask',"That Symbol is not in the watchlist, try another command or ask for help", "try another command or ask for help")
-      case 'rejectadd' :
-        speech = (':ask', "that symbol is already in your watchlist, try another command or ask for help", "try another command or ask for help")
-      case 'add' :
-        speech = (':ask', `you successfully added,<say-as interpret-as="spell-out">${symbol}</say-as> to your watchlist, issue me another command`,`issue me another command`)
-        break;
-      case 'remove' :
-        speech =(':ask', `you successfully removed,<say-as interpret-as="spell-out">${symbol}</say-as> from your watchlist, issue me another command`,`issue me another command`)
-        break;
-    }
-    this.response.speak(`${speech}`)                                        
-        .listen(`issue me another command`)
-        .cardRenderer( `${speech}`)
-        .shouldEndSession(false)
-    this.emit(':responseReady')
-  }, // End Edit Watchlist
-
-  'EditBlotterIntent' : function() { 
     console.log("Event  : ",JSON.stringify(this.event))
     let speech =``
     if (checkWlReq(this.event)) { // check for a valid request with all parameters needed present
@@ -573,28 +467,28 @@ const handlers = {
                 self.emit(':responseReady') }
             else {
                   self.attributes['portfolio'] = portfolio
-                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state}, issue me another command `)
-                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}, issue me another command `)
+                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state} at a price of $${order.price}, issue me another command `)
+                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}  at a price of $${order.price}, issue me another command `)
                     .listen(`issue me another command`)
                     .shouldEndSession(false)
                   self.emit(':responseReady')
             }
           })
     } else {
-      self.response.speak(`sorry, you did not provide enough information to provide a response., try again or ask for help`) 
+      this.response.speak(`sorry, you did not provide enough information to provide a response., try again or ask for help`) 
           .listen(`try again or ask for help`)
           .cardRenderer(`sorry, you did not provide enough information to provide a response., try again or ask for help`)
           .shouldEndSession(false)
-      self.emit(':responseReady')
+      this.emit(':responseReady')
     }
   }, // End port intent
 
   'RecentNews' : function() {
-    this.emit(':ask',``)
+    this.emit(':ask',`We have recently added paper trading. Keep track of your trading prowess. we keep track of your realized profits or losses. Realized means selling a position. Your profit is based on what you paid, as an average price over all your purchases.  we will soon add a top 3 traders list. `)
   },
 
   'AMAZON.HelpIntent' : function() {
-    let responseSpeech = ` We keep track of a number of crypto instruments. ask for a quote on one of todays most popular crypto coins. you can also ask for a random description of the instruments we cover. this is a great way to gain an understanding of how the coin is monetized, what need it tries to satisfy, and how those services are delivered. We start you out with a short watch list, containing bit coin, lite coin and ethereum. Say, brief me, to get current prices on cryptos you have an interest in. You can also add or remove items by saying, as an example, add ripple to my watchlist. and finally, you can ask for a detailed quote by saying, give me details, and then the crypto you want. There is also an order engine for paper trading. we start you with a 100000 dollar balance. just say, buy 5 bit coin. You can't go short, meaning you can't sell more coins than you own. To get a summary of your account, say, How am I doing, or give me an account summary. Lets get started. what can I do for you?`
+    let responseSpeech = ` We keep track of a number of crypto instruments. ask for a quote on one of todays most popular crypto coins. you can also ask for a random description of the instruments we cover. this is a great way to gain an understanding of how the coin is monetized, what need it tries to satisfy, and how those services are delivered. We start you out with a short watch list, containing bit coin, lite coin and ethereum. Say, brief me, to get current prices on cryptos you have an interest in. You can also add or remove items by saying, as an example, add ripple to my watchlist. you can ask for a detailed quote by saying, give me details, and then the crypto you want. and finally, There is an order engine for paper trading. we start you with a 500000 dollar balance. just say, buy 5 bit coin. You can't go short, meaning you can't sell more coins than you own. To get a summary of your account, say, How am I doing, or give me an account summary. Lets get started. what can I do for you?`
 
     this.response.speak(`${responseSpeech}`)
         .listen(`if you need to hear it again, just say I need help `)

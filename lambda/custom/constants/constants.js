@@ -13,7 +13,7 @@ var constants = {
   initPortfolio : {
     "empty" : true,
     "balance" : {
-      "cash" : 100000.00,
+      "cash" : 500000.00,
       "bookedpl":0.0,
       "costBasis":0.0,
       "positions" : []

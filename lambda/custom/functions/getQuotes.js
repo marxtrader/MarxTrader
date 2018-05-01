@@ -28,12 +28,12 @@
       })
       .then(json => {
         json['symbol'] = symbolName
-        json.bid = percisionToString(json.bid)
+        json.bid = percisionToString(json.bid,2)
         json.last_price = percisionToString(json.last_price,2)
-        json.ask = percisionToString(json.ask)
+        json.ask = percisionToString(json.ask,2)
         json.volume = percisionToString(json.volume,0)
-        json.high = percisionToString(json.high)
-        json.low = percisionToString(json.low)
+        json.high = percisionToString(json.high,2)
+        json.low = percisionToString(json.low,2)
         return json
       })
   }

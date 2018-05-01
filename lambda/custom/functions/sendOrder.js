@@ -10,8 +10,6 @@
     }
   }
 
-  
-
 const sendOrder = function (portfolio, order, idx, callback) {
 
     const cl = function(label){
@@ -24,7 +22,7 @@ const sendOrder = function (portfolio, order, idx, callback) {
     }
 
     const getQuote = require('./getQuote')
-    let reportPrice = 0.0
+    let tradeCost = 0.0
 
     console.log("order - ", order)
 
@@ -32,10 +30,10 @@ const sendOrder = function (portfolio, order, idx, callback) {
 
     .then(quote => {
         
-        reportPrice = precision(parseInt(quote.last_price,10),2)
-
-        let tradeCost = (order.qty * reportPrice)        
-        order.price = reportPrice
+        let reportPrice = parseFloat(quote.last_price).toFixed(2)
+        let sellPrice = parseFloat(quote.bid).toFixed(2)
+        let buyPrice = parseFloat(quote.ask).toFixed(2)
+        
         order.timeStamp = quote.timestamp
 
         if (order.side == "sell") {
@@ -60,71 +58,85 @@ const sendOrder = function (portfolio, order, idx, callback) {
         
         if (order.side=='sell')  {
 
-            let proceeds = (reportPrice * order.qty)
-
+            let proceeds = (sellPrice * order.qty).toFixed(2)
+            let cost = (order.qty * portfolio.balance.positions[idx].avgprice).toFixed(2)
+            let pl = proceeds - cost
+            order.price = sellPrice
+            order.proceeds = proceeds
             order.state = 'filled'
-                        
-            // adjust costbasis 
-            portfolio.balance.costBasis -= portfolio.balance.positions[idx].costBasis
 
             // take difference between costbasis and proceeds and book to p and l
-            portfolio.balance.bookedpl += proceeds - portfolio.balance.positions[idx].costBasis
+            portfolio.balance.bookedpl += pl
 
             // adjust cash position and cost basis
             portfolio.balance.cash += proceeds
-            portfolio.balance.positions[idx].costBasis -= (portfolio.balance.positions[idx].qty * portfolio.balance.positions[idx].avgprice)
+            portfolio.balance.positions[idx].costBasis -= cost
 
             //reduce position by order qty
             portfolio.balance.positions[idx].qty -= order.qty
+
+            // adjust costbasis for account
+            portfolio.balance.costBasis -= cost
 
             // push order onto blotter
             portfolio.orders.push(order)
 
             // remove empty position 
-            if (portfolio.balance.positions[idx].qty == 0) {     
-                console.log("portfolio positions :  ",portfolio.balance.positions,"  : Idx = ",idx )          
-                //let rem = splice(idx,1,portfolio.balance.positions)
+            if (portfolio.balance.positions[idx].qty == 0) {             
                 portfolio.balance.positions.splice(idx,1)
-                if (portfolio.balance.positions == []) {
+
+                // reset the empty portfolio flag to true
+                if (portfolio.balance.positions.length == 0) {
                     portfolio.empty = true
-                }
+                    console.log("flag set to true")
+                } 
+                //else {
+                //     console.log("ugg..can't be false : ",portfolio.balance.positions)
+                // }
             };
             callback(null, order, portfolio)
         }
         
         if (order.side == 'buy') {
+            order.price = buyPrice
+            order.cost = buyPrice*order.qty
             if ((idx == -1) && (portfolio.empty == true)) {
-                let newPosition = {}
+
+                let newPosition = {
+                    "symbol":order.symbol,
+                    "qty":order.qty,
+                    "avgprice":buyPrice,
+                    "costBasis":order.cost
+                }
+
                 order.state = 'filled'
                 portfolio.empty = false
-                newPosition.symbol = order.symbol
-                newPosition.qty = order.qty 
-                newPosition.avgprice = reportPrice
-                newPosition.costBasis = (reportPrice * order.qty)
-                portfolio.balance.cash -= newPosition.costBasis
-                portfolio.balance.costBasis += (reportPrice * order.qty)
-                portfolio.balance.positions[0] = newPosition
+                portfolio.balance.cash -= order.cost
+                portfolio.balance.costBasis += order.cost
+                portfolio.balance.positions.push(newPosition)
                 portfolio.orders.push(order)
                 callback(null, order, portfolio)
 
             } else if ((order.side == 'buy') && (idx != -1)) {
                 order.state = 'filled'
                 portfolio.balance.positions[idx].qty += order.qty
-                portfolio.balance.costBasis += (reportPrice * order.qty)
-                portfolio.balance.cash -= (reportPrice * order.qty)
-                portfolio.balance.positions[idx].costBasis += (reportPrice * order.qty)
-                portfolio.balance.positions[idx].avgprice = portfolio.balance.positions[idx].costBasis / portfolio.balance.positions[idx].qty             
+                portfolio.balance.costBasis += order.cost
+                portfolio.balance.cash -= order.cost
+                portfolio.balance.positions[idx].costBasis += order.cost
+                portfolio.balance.positions[idx].avgprice = (cost / portfolio.balance.positions[idx].qty).toFixed(2)             
                 portfolio.orders.push(order)
                 callback(null, order, portfolio)
 
             } else if ((idx == -1) && (portfolio.empty == false)) {
-                let newPosition = {}
+                let newPosition = {
+                    "symbol":order.symbol,
+                    "qty":order.qty,
+                    "avgprice":buyPrice,
+                    "costBasis":order.cost
+                }
+
                 order.state = 'filled'
                 portfolio.empty = false
-                newPosition.symbol = order.symbol
-                newPosition.qty = order.qty 
-                newPosition.avgprice = reportPrice
-                newPosition.costBasis = (reportPrice * order.qty)
                 portfolio.balance.cash -= newPosition.costBasis
                 portfolio.balance.costBasis += newPosition.costBasis
                 portfolio.balance.positions.push(newPosition)
