@@ -201,8 +201,8 @@ const handlers = {
                 self.emit(':responseReady') }
             else {
                   self.attributes['portfolio'] = portfolio
-                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state}, issue me another command `)
-                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}, issue me another command `)
+                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state} at $${order.price}, issue me another command `)
+                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state} at $${order.price}, issue me another command `)
                     .listen(`issue me another command`)
                     .shouldEndSession(false)
                   self.emit(':responseReady')
