@@ -10,16 +10,18 @@
     }
   }
 
-const sendOrder = function (portfolio, order, idx, callback) {    
+const sendOrder = function (portfolio, order, idx, callback) {
 
     const getQuote = require('./getQuote')
 
     getQuote(order.symbol)
 
     .then(quote => {
-    
-        let sellPrice = quote.bid
-        let buyPrice  = quote.ask
+        
+        let reportPrice = parseFloat(quote.last_price).toFixed(2)
+        let sellPrice = parseFloat(quote.bid).toFixed(2)
+        let buyPrice = parseFloat(quote.ask).toFixed(2)
+        
         order.timeStamp = quote.timestamp
         
         // immediately Reject orders that would result in a negative quantity or issuficient balance
@@ -48,8 +50,8 @@ const sendOrder = function (portfolio, order, idx, callback) {
 
         if (order.side=='sell')  {
 
-            let proceeds = Math.round(sellPrice * order.qty)
-            let cost = Math.round(order.qty * portfolio.balance.positions[idx].avgprice)
+            let proceeds = (sellPrice * order.qty).toFixed(2)
+            let cost = (order.qty * portfolio.balance.positions[idx].avgprice).toFixed(2)
             let pl = proceeds - cost
             order.price = sellPrice
             order.proceeds = proceeds
@@ -92,8 +94,8 @@ const sendOrder = function (portfolio, order, idx, callback) {
         if (order.side == 'buy') {
 
             // get the ask price and calculate the cost of the trade.
-            order.price = (buyPrice)
-            order.cost = (buyPrice*order.qty)
+            order.price = parseFloat(buyPrice).toFixed(2)
+            order.cost = parseFloat((buyPrice*order.qty).toFixed(2))
             console.log("buy price, cost : ",buyPrice, order.cost)
             console.log("type of : ",typeof(buyPrice), typeof(order.cost))
             console.log("Type of costBasis : ",portfolio.balance.costBasis)
@@ -111,7 +113,7 @@ const sendOrder = function (portfolio, order, idx, callback) {
                 portfolio.empty = false
                 portfolio.balance.cash -= order.cost
                 portfolio.balance.costBasis += order.cost
-                //portfolio.balance.costBasis = parseFloat(portfolio.balance.costBasis)
+                //portfolio.balance.costBasis = parseFloat(portfolio.balance.costBasis).toFixed(2)
                 console.log("type of costBasis : ",typeof(portfolio.balance.costBasis))
                 portfolio.balance.positions.push(newPosition)
                 portfolio.orders.push(order)
@@ -120,10 +122,10 @@ const sendOrder = function (portfolio, order, idx, callback) {
             } else if ((order.side == 'buy') && (idx != -1)) {
                 order.state = 'filled'
                 portfolio.balance.positions[idx].qty += order.qty
-                portfolio.balance.costBasis += (order.cost)
-                portfolio.balance.cash -= (order.cost)
+                portfolio.balance.costBasis += parseFloat(order.cost).toFixed(2)
+                portfolio.balance.cash -= parseFloat(order.cost).toFixed(2)
                 portfolio.balance.positions[idx].costBasis += order.cost
-                portfolio.balance.positions[idx].avgprice = ((portfolio.balance.positions[idx].costBasis / portfolio.balance.positions[idx].qty))
+                portfolio.balance.positions[idx].avgprice = parseFloat((portfolio.balance.positions[idx].costBasis / portfolio.balance.positions[idx].qty).toFixed(2))
                 portfolio.orders.push(order)
                 callback(null, order, portfolio)
 

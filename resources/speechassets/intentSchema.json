@@ -1,0 +1,542 @@
+{
+  "interactionModel": {
+      "languageModel": {
+          "invocationName": "my crypto guru",
+          "intents": [
+              {
+                  "name": "AMAZON.CancelIntent",
+                  "samples": [
+                      "cancel",
+                      "cancel it",
+                      "cancel command",
+                      "cancel that",
+                      "never mind that"
+                  ]
+              },
+              {
+                  "name": "AMAZON.HelpIntent",
+                  "samples": [
+                      "I need help",
+                      "can you help me",
+                      "help"
+                  ]
+              },
+              {
+                  "name": "AMAZON.StopIntent",
+                  "samples": [
+                      "Stop",
+                      "Quit",
+                      "good bye"
+                  ]
+              },
+              {
+                  "name": "EditWatchList",
+                  "slots": [
+                      {
+                          "name": "action",
+                          "type": "ACTION_TYPES"
+                      },
+                      {
+                          "name": "symbol",
+                          "type": "CRYPTO_NAMES"
+                      }
+                  ],
+                  "samples": [
+                      "{action} {symbol} to watch list",
+                      "{action} {symbol} to my watch list",
+                      "{action} {symbol} from watch list",
+                      "{action} {symbol} from my watch list",
+                      "{action} {symbol} to watchlist",
+                      "{action} {symbol} to my watchlist",
+                      "{action} {symbol} from watchlist",
+                      "{action} {symbol} from my watchlist",
+                      "{action} {symbol} to favorites",
+                      "{action} {symbol} to my favorites",
+                      "{action} {symbol} from favorites",
+                      "{action} {symbol} from my favorites",
+                      "{action} {symbol} to favorites list",
+                      "{action} {symbol} to my favorites list",
+                      "{action} {symbol} from favorites list",
+                      "{action} {symbol} from my favorites list"
+                  ]
+              },
+              {
+                  "name": "BriefMeIntent",
+                  "slots": [],
+                  "samples": [
+                      "brief me",
+                      "ask my crypto guru to brief me",
+                      "tell my crypto guru to brief me"
+                  ]
+              },
+              {
+                  "name": "NameCapture",
+                  "slots": [
+                      {
+                          "name": "USFirstName",
+                          "type": "AMAZON.US_FIRST_NAME"
+                      }
+                  ],
+                  "samples": [
+                      "My name is {USFirstName}"
+                  ]
+              },
+              {
+                  "name": "QuoteIntent",
+                  "slots": [
+                      {
+                          "name": "symbol",
+                          "type": "CRYPTO_NAMES"
+                      }
+                  ],
+                  "samples": [
+                      "Get me the price of {symbol}",
+                      "tell me the price of {symbol}",
+                      "what is the price of {symbol}",
+                      "Get me the quote of {symbol}",
+                      "tell me the quote of {symbol}",
+                      "what is the quote of {symbol}",
+                      "what is the market in {symbol}",
+                      "what is {symbol} trading at",
+                      "Where is {symbol}",
+                      "give me the market in {symbol}"
+                  ]
+              },
+              {
+                  "name": "DetailedQuoteIntent",
+                  "slots": [
+                      {
+                          "name": "symbol",
+                          "type": "CRYPTO_NAMES"
+                      }
+                  ],
+                  "samples": [
+                      "what is the detailed quote for {symbol}",
+                      "tell me what the detailed quote is in {symbol}",
+                      "what is the detailed quote on {symbol}",
+                      "give me the detailed quote on {symbol}",
+                      "Get me the detail on {symbol}",
+                      "Give me the detail on {symbol}",
+                      "tell me the detail on {symbol}",
+                      "what is the detail on {symbol}",
+                      "what is the detail of {symbol}",
+                      "Get me the details on {symbol}",
+                      "Give me the details on {symbol}",
+                      "tell me the details on {symbol}",
+                      "ask my crypto guru what is the detailed quote for {symbol}",
+                      "ask my crypto guru to tell me what the detailed quote is in {symbol}",
+                      "ask my crypto guru what is the detailed quote on {symbol}",
+                      "ask my crypto guru to give me the detailed quote on {symbol}",
+                      "ask my crypto guru to Get me the detail on {symbol}",
+                      "ask my crypto guru to Give me the detail on {symbol}",
+                      "ask my crypto guru to tell me the detail on {symbol}",
+                      "ask my crypto guru what is the detail on {symbol}",
+                      "ask my crypto guru what is the detail of {symbol}",
+                      "ask my crypto guru to Get me the details on {symbol}",
+                      "ask my crypto guru to Give me the details on {symbol}",
+                      "ask my crypto guru to tell me the details on {symbol}",
+                      "ask my crypto guru what are the details are on {symbol}",
+                      "tell my crypto guru what is the detailed quote for {symbol}",
+                      "tell my crypto guru to tell me what the detailed quote is in {symbol}",
+                      "tell my crypto guru what is the detailed quote on {symbol}",
+                      "tell my crypto guru to give me the detailed quote on {symbol}",
+                      "tell my crypto guru to Get me the detail on {symbol}",
+                      "tell my crypto guru to Give me the detail on {symbol}",
+                      "tell my crypto guru to tell me the detail on {symbol}",
+                      "tell my crypto guru what is the detail on {symbol}",
+                      "tell my crypto guru what is the detail of {symbol}",
+                      "tell my crypto guru to Get me the details on {symbol}",
+                      "tell my crypto guru to Give me the details on {symbol}",
+                      "tell my crypto guru to tell me the details on {symbol}"
+                  ]
+              },
+              {
+                  "name": "DescribeWatchListIntent",
+                  "slots": [],
+                  "samples": [
+                      "give me my watch list",
+                      "tell me my watch list",
+                      "describe my watch list",
+                      "which crytpos are in my watch list",
+                      "which crytpos are on my watch list",
+                      "which symbols are in my watch list",
+                      "which symbols are on my watch list",
+                      "which instruments are in my watch list",
+                      "which instruments are on my watch list",
+                      "what is on my watch list",
+                      "what's in my watch list",
+                      "what is on my watch list",
+                      "what's in my watch list",
+                      "what crypto's are on my watch list",
+                      "what crypto's are in my watch list"
+                  ]
+              }
+          ],
+          "types": [
+              {
+                  "name": "CRYPTO_NAMES",
+                  "values": [
+                      {
+                          "id": "ethusd",
+                          "name": {
+                              "value": "ethusd",
+                              "synonyms": [
+                                  "ether",
+                                  "ethereum"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "btcusd",
+                          "name": {
+                              "value": "btcusd",
+                              "synonyms": [
+                                  "bitcoin"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "ltcusd",
+                          "name": {
+                              "value": "ltcusd",
+                              "synonyms": [
+                                  "litecoin",
+                                  "lightcoin"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "zrxusd",
+                          "name": {
+                              "value": "zrxusd",
+                              "synonyms": [
+                                  "zcash"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "avtusd",
+                          "name": {
+                              "value": "avtusd",
+                              "synonyms": [
+                                  "Aventus",
+                                  "avtusd",
+                                  "event us"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "batusd",
+                          "name": {
+                              "value": "batusd",
+                              "synonyms": [
+                                  "Basic Attention Token",
+                                  "bat"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "bchusd",
+                          "name": {
+                              "value": "bchusd",
+                              "synonyms": [
+                                  "bitcoin cash",
+                                  "cash"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "dshusd",
+                          "name": {
+                              "value": "dshusd",
+                              "synonyms": [
+                                  "dash coin",
+                                  "dash"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "mnausd",
+                          "name": {
+                              "value": "mnausd",
+                              "synonyms": [
+                                  "Decentra land",
+                                  "mna"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "edousd",
+                          "name": {
+                              "value": "edousd",
+                              "synonyms": [
+                                  "Eidoo",
+                                  "I do"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "eosusd",
+                          "name": {
+                              "value": "eosusd",
+                              "synonyms": [
+                                  "eos coin",
+                                  "eos"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "etcusd",
+                          "name": {
+                              "value": "etcusd",
+                              "synonyms": [
+                                  "ethereum classic",
+                                  "classic"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "etpusd",
+                          "name": {
+                              "value": "etpusd",
+                              "synonyms": [
+                                  "etp"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "funusd",
+                          "name": {
+                              "value": "funusd",
+                              "synonyms": [
+                                  "Fun fair",
+                                  "Fun"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "gntusd",
+                          "name": {
+                              "value": "gntusd",
+                              "synonyms": [
+                                  "Golem"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "xmrusd",
+                          "name": {
+                              "value": "xmrusd",
+                              "synonyms": [
+                                  "Monero",
+                                  "mony",
+                                  "money"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "neousd",
+                          "name": {
+                              "value": "neousd",
+                              "synonyms": [
+                                  "neo coin",
+                                  "neo"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "omgusd",
+                          "name": {
+                              "value": "omgusd",
+                              "synonyms": [
+                                  "Omise Go",
+                                  "go coin",
+                                  "oh my god"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "qshusd",
+                          "name": {
+                              "value": "qshusd",
+                              "synonyms": [
+                                  "quash"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "qtmusd",
+                          "name": {
+                              "value": "qtmusd",
+                              "synonyms": [
+                                  "qtum",
+                                  "quantum"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "xrpusd",
+                          "name": {
+                              "value": "xrpusd",
+                              "synonyms": [
+                                  "ripple"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "sanusd",
+                          "name": {
+                              "value": "sanusd",
+                              "synonyms": [
+                                  "santiment",
+                                  "sancoin"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "spkusd",
+                          "name": {
+                              "value": "spkusd",
+                              "synonyms": [
+                                  "spank chain"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "sntusd",
+                          "name": {
+                              "value": "sntusd",
+                              "synonyms": [
+                                  "status"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "dtausd",
+                          "name": {
+                              "value": "dtausd",
+                              "synonyms": [
+                                  "streamer",
+                                  "data coin"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "tnbusd",
+                          "name": {
+                              "value": "tnbusd",
+                              "synonyms": [
+                                  "TIME NEW BANK"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "yywusd",
+                          "name": {
+                              "value": "yywusd",
+                              "synonyms": [
+                                  "YOYOW",
+                                  "YOYO"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "zecusd",
+                          "name": {
+                              "value": "zecusd",
+                              "synonyms": [
+                                  "ZCASH"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "itausd",
+                          "name": {
+                              "value": "itausd",
+                              "synonyms": [
+                                  "iota"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "aidusd",
+                          "name": {
+                              "value": "aidusd",
+                              "synonyms": [
+                                  "aid coin"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "btgusd",
+                          "name": {
+                              "value": "btgusd",
+                              "synonyms": [
+                                  "bitcoin gold"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "elfusd",
+                          "name": {
+                              "value": "elfusd",
+                              "synonyms": [
+                                  "a elf"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "rcnusd",
+                          "name": {
+                              "value": "rcnusd",
+                              "synonyms": [
+                                  "RCN"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "repusd",
+                          "name": {
+                              "value": "repusd",
+                              "synonyms": [
+                                  "Augur",
+                                  "awe ger"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "rlcusd",
+                          "name": {
+                              "value": "rlcusd",
+                              "synonyms": [
+                                  "recovery right token",
+                                  "recovery right"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "sngusd",
+                          "name": {
+                              "value": "sngusd",
+                              "synonyms": [
+                                  "Singular",
+                                  "dtb",
+                                  "singular dtb"
+                              ]
+                          }
+                      },
+                      {
+                          "id": "trxusd",
+                          "name": {
+                              "value": "trxusd",
+                              "synonyms": [
+                                  "trom"
+                              ]
+                          }
+                      }
+                  ]
+              }
+          ]
+      }
+  }
+}

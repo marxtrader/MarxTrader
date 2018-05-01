@@ -280,72 +280,6 @@ const handlers = {
     })
   },
 
-  'DescribeAccount' : function() {
-    // check request
-    // import port
-    // compare current prices to average price
-    let self = this;
-    let portfolio = this.attributes['portfolio'];
-    let posList = [];
-    let speech =''
-    let cardSpeech = ''
-
-    function precisionRound(number, precision) {
-      var factor = Math.pow(10, precision);
-      return Math.round(number * factor) / factor;
-    }
-
-    if (portfolio.empty) {
-      this.emit(':ask',  ` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio, get in the game and buy something, issue me another command. `)
-    } else{
-      for (let i=0;i<portfolio.balance.positions.length;i++) {
-        posList.push(portfolio.balance.positions[i].symbol)
-      }
-    }
-
-    let costBasis = 0.0;
-    let profitLoss = 0.0;
-    let totalpl = 0.0;
-
-    getQuotes(posList)
-      .then(quotes => {
-
-        let grossPL = 100000 - (portfolio.balance.costBasis - portfolio.balance.cash)
-        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. your booked profit or loss is $${portfolio.balance.bookedpl} `
-
-        cardSpeech = cardSpeech + ` your balance is $${portfolio.balance.cash} in cash with a cost basis of $${portfolio.balance.costBasis} on your portfolio `
-
-        for (var i=0;i<quotes.length;i++) {
-          profitLoss = precisionRound(((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis),2)
-          totalpl += profitLoss
-          if (profitLoss > 0) {
-            speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss},`
-
-            cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss},`
-
-          } else {
-            speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss},`
-
-            cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss},`
-          }
-        }  
-
-        if (totalpl > 0) {
-          speech += `for a total profit of $${totalpl} `
-        } else if (totalpl < 0) {
-          speech += `for a total loss of $${totalpl} `
-        } else {
-          speech += ` with no realized profit or loss`
-        }
-        
-        self.response.speak(` ${speech}. issue me another command `)
-          .listen(`issue me another command`)
-          .cardRenderer(` ${cardSpeech} , issue me another command `)
-          .shouldEndSession(false)
-        self.emit(':responseReady')
-    })
-  },
-
   'BriefMeIntent' : function(){
     let self = this;
     let speech = ''
@@ -459,16 +393,17 @@ const handlers = {
           sendOrder(portfolio, order, idx, function(err, order, portfolio) {
 
             if (err) {
-                portfolio.orders.push(order)
+                //portfolio.orders.push(order)
                 self.response.speak(` ${err} , issue me another command `)
                   .listen(`issue me another command`)
                   .cardRenderer(` ${err} , issue me another command `)
                   .shouldEndSession(false)
                 self.emit(':responseReady') }
             else {
+                  let price = order.price/100
                   self.attributes['portfolio'] = portfolio
-                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state} at a price of $${order.price}, issue me another command `)
-                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}  at a price of $${order.price}, issue me another command `)
+                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state} at a price of $${price}, issue me another command `)
+                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}  at a price of $${price}, issue me another command `)
                     .listen(`issue me another command`)
                     .shouldEndSession(false)
                   self.emit(':responseReady')
@@ -482,6 +417,74 @@ const handlers = {
       this.emit(':responseReady')
     }
   }, // End port intent
+
+
+  'DescribeAccount' : function() {
+    // check request
+    // import port
+    // compare current prices to average price
+
+    let self = this;
+    let portfolio = this.attributes['portfolio'];
+    let posList = [];
+    let speech =''
+    let cardSpeech = ''
+    let profitLoss = 0.0;
+    let totalpl = 0.0;
+
+    let cash = portfolio.balance.cash / 100
+    let costBasis = portfolio.balance.costBasis / 100
+    let bookedpl = portfolio.balance.bookedpl / 100
+
+    if (portfolio.empty) {
+      this.emit(':ask',  ` your balance is ${cash} dollars,  You have no positions in your portfolio, get in the game and buy something, issue me another command. `)
+    } else{
+      for (let i=0;i<portfolio.balance.positions.length;i++) {
+        posList.push(portfolio.balance.positions[i].symbol)
+      }
+    }
+
+    getQuotes(posList)
+      .then(quotes => {
+
+        speech = speech + ` your balance is $${cash} in cash, with a cost basis of $${costBasis} on your portfolio. your booked profit or loss is $${bookedpl}. `
+
+        cardSpeech = cardSpeech + ` your balance is $${cash} in cash with a cost basis of $${costBasis} on your portfolio. your booked profit or loss is $${bookedpl}. `
+
+        for (var i=0;i<quotes.length;i++) {
+
+          profitLoss = ((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis)
+
+          totalpl += profitLoss
+
+          if (profitLoss > 0) {
+              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss},`
+
+              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss},`
+
+          } else {
+              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss},`
+
+              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss},`
+          }
+
+        }  
+
+        if (totalpl > 0) {
+          speech += `for a total profit of $${totalpl} `
+        } else if (totalpl < 0) {
+          speech += `for a total loss of $${totalpl} `
+        } else {
+          speech += ` with no realized profit or loss`
+        }
+        
+        self.response.speak(` ${speech}. issue me another command `)
+          .listen(`issue me another command`)
+          .cardRenderer(` ${cardSpeech} , issue me another command `)
+          .shouldEndSession(false)
+        self.emit(':responseReady')
+    })
+  },
 
   'RecentNews' : function() {
     this.emit(':ask',`We have recently added paper trading. Keep track of your trading prowess. we keep track of your realized profits or losses. Realized means selling a position. Your profit is based on what you paid, as an average price over all your purchases.  we will soon add a top 3 traders list. `)
