@@ -1,6 +1,4 @@
   
-  const deviceId = "amzn1.ask.account.AESHTVDMAGM4CT2T63NFLW3LO3S3ECPH7XIRTOV7YHLYI7T74IWF3IBBWFSCRYGP5RTYRPMBZXGU7RRRFGAJAQEN2O6KKJLSQ6Z3TZAD7UVN535TT3NJLHF2TB3QCRFAHL4QG77XEI75AUWQYERAORXAY2PJGO2TPKISSIXRY6WR7EJQ5XZUTPIPJW477KZE4KKO7UDKWJYB2DQ"
-  
   const getDescriptionData = function (symbol) { //,cb) {
           
       var AWS = require("aws-sdk");
@@ -23,6 +21,7 @@
       docClient.get(params, function(err, data) {
           if (err) {
               console.error("Error ; ", JSON.stringify(err, null, 2));
+              return 
           } else {
              console.log(JSON.stringify(data.Item.description))
           }
