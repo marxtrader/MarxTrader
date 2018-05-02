@@ -1,5 +1,5 @@
   
-  const getDescriptionData = function (symbol) { //,cb) {
+  const putDescriptionData = function (symbol,type,description) { //,cb) {
           
       var AWS = require("aws-sdk");
   
@@ -14,11 +14,12 @@
           TableName: table,
           Key:{
               "symbol": symbol,
-              "type" : 'currency'
+              "type" : type
           }
+          "descriptions" : description
       };
   
-      docClient.get(params, function(err, data) {
+      docClient.put(params, function(err, data) {
           if (err) {
               console.error("Error ; ", JSON.stringify(err, null, 2));
               return 
@@ -27,4 +28,4 @@
           }
       });
   }
-  getDescriptionData('btcusd')
+  putDescriptionData('btcusd','currency',description)
