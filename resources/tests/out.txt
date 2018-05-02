@@ -1,0 +1,17 @@
+test objects [ { name: 'AMAZON.CancelIntent',
+    utterance: 
+     [ 'cancel',
+       'cancel it',
+       'cancel command',
+       'cancel that',
+       'never mind that' ] },
+  { name: 'AMAZON.HelpIntent',
+    utterance: [ 'I need help', 'can you help me', 'help' ] },
+  { name: 'AMAZON.StopIntent',
+    utterance: [ 'stop', 'quit', 'good bye', 'no thanks', 'no', 'bye' ] },
+  { name: 'QuoteIntent', utterance: [] },
+  { name: 'DetailedQuoteIntent', utterance: [] },
+  { name: 'DescribeIntent', utterance: [] },
+  { name: 'DescribeRandomIntent', utterance: [] },
+  { name: 'NameCapture', utterance: [] },
+  { name: 'UnknownIntent', utterance: [] } ]
