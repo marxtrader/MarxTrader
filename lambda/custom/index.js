@@ -54,8 +54,7 @@ const handlers = {
       speech = (`lets go ${userName} ,issue me a command`);
     } else {
       // Welcome User for the First Time
-      speech = (`get ready, three, two, one, go.`)
-      //speech = (` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`);
+      speech = (` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`);
     }
     self.response.speak(`${speech}`)
         .listen( `issue me another command`)
@@ -82,8 +81,8 @@ const handlers = {
       this.attributes['portfolio'] = constants.initPortfolio 
       this.attributes['watchlist'] = ['btcusd', 'ethusd','ltcusd'];
       this.attributes['userName'] = name;
-      this.emit('LaunchRequest')
-      //this.emit('AMAZON.HelpIntent');
+      //this.emit('LaunchRequest')
+      this.emit('AMAZON.HelpIntent');
 
     } else {
       speech = (`Sorry, I didn't recognise that name!, say my name is, and then your name`);
@@ -93,67 +92,6 @@ const handlers = {
         .cardRenderer(`${speech}`)
         .shouldEndSession(false)
     self.emit(':responseReady')
-  },
-
-  'DescribeAccount' : function() {
-    // check request
-    // import port
-    // compare current prices to average price
-    let self = this;
-    let portfolio = this.attributes['portfolio'];
-    let posList = [];
-    let speech =''
-    let cardSpeech = ''
-
-    function precisionRound(number, precision) {
-      var factor = Math.pow(10, precision);
-      return Math.round(number * factor) / factor;
-    }
-
-    if (portfolio.empty) {
-        self.response.speak(` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio. get in the game and buy something, issue me another command. `)
-            .listen(`issue me another command`)
-            .cardRenderer(` your balance is ${portfolio.balance.cash} dollars,  You have no positions in your portfolio, get in the game and buy something, issue me another command. `)
-            .shouldEndSession(false)
-        self.emit(':responseReady')
-    } else {
-      for (let i=0;i<portfolio.balance.positions.length;i++) {
-        posList.push(portfolio.balance.positions[i].symbol)
-      }
-    }
-
-    let costBasis = 0.0;
-    let profitLoss = 0.0;
-    // let totalpl = 0.0
-
-    getQuotes(posList)
-      .then(quotes => {
-
-        let grossPL = 100000 - (portfolio.balance.costBasis - portfolio.balance.cash)
-        speech = speech + ` your balance is $${portfolio.balance.cash} in cash, with a cost basis of $${portfolio.balance.costBasis} on your portfolio. the profit or loss is $${portfolio.balance.bookedpl}. `
-
-        cardSpeech = cardSpeech + ` your balance is $${portfolio.balance.cash} in cash with a cost basis of $${portfolio.balance.costBasis} on your portfolio. `
-
-        for (var i=0;i<quotes.length;i++) {
-          profitLoss = precisionRound(((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis),2)
-
-          if (profitLoss > 0) {
-            speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss},`
-
-            cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss},`
-
-          } else {
-            speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss},`
-
-            cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss},`
-          }
-        }  
-        self.response.speak(` ${speech}. issue me another command `)
-          .listen(`issue me another command`)
-          .cardRenderer(` ${cardSpeech} , issue me another command `)
-          .shouldEndSession(false)
-        self.emit(':responseReady')
-    })
   },
 
   'LaunchRequest' : function() {
@@ -172,20 +110,21 @@ const handlers = {
       if (checkQuoteReq(this.event)) {
 
           let symbol = (this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.id);
-          console.log(symbol)
+
           let symbolName = this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.name;
-          console.log(symbolName)
 
           getQuote(symbol)
             .then(quote => {
-              speech = ( `<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${quote.last_price}, issue me another command `)
-              cardSpeech = (`${quote.symbol} is $${quote.last_price}, issue me another command `)
+              let last_price = (quote.last_price/100)
+              speech = ( `<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${last_price}, issue me another command. `)
+              cardSpeech = (`${quote.symbol} is $${last_price}, issue me another command. `)
               self.response.speak(speech)
                   .listen(`issue me a command`)
                   .shouldEndSession(false)
               self.emit(':responseReady')
             })
             .catch(err => {
+              console.log("error : ",err)
               self.emit(':ask',`sorry, we do not cover that instrument, try again or ask for help`,`try again or ask for help`)
             });
       } else {
@@ -205,9 +144,15 @@ const handlers = {
 
           getQuote(symbol)
             .then(quote => {
-              self.response.speak(`<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${quote.bid} and offered at $${quote.ask}. the high is $${quote.high}, the low, is $${quote.low}. on Volume of ${quote.volume}. give me another command `)
+
+              let bid = (quote.bid/100)
+              let ask = (quote.ask/100)
+              let low = (quote.low/100)
+              let high = (quote.high/100)
+
+              self.response.speak(`<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${bid} and offered at $${ask}. the high is $${high}, the low, is $${low}. on Volume of ${quote.volume}. give me another command `)
                   .listen(`give me another command `)
-                  .cardRenderer(`${quote.symbol} is $${quote.bid} and offered at $${quote.ask}. the high is $${quote.high}, the low, is $${quote.low}. on Volume of ${quote.volume}. give me another command `)
+                  .cardRenderer(`${quote.symbol} is $${bid} and offered at $${ask}. the high is $${high}, the low, is $${low}. on Volume of ${quote.volume}. give me another command `)
                   .shouldEndSession(false)
               self.emit(':responseReady')
             })
@@ -242,7 +187,6 @@ const handlers = {
           if (err) {
             self.emit('DescribeRandomIntent');
           } else {
-            console.log('cardSpeech : ',cardSpeech)
             self.emit(':askWithCard', speech + `. issue me another command`,`try again or ask for help`,'crypto description',cardSpeech)
             // self.response.speak(speech)
             //     .cardRenderer(cardSpeech)
@@ -284,12 +228,15 @@ const handlers = {
     let self = this;
     let speech = ''
     //let positions = this.attributes['portfolio.balance.positions'];
+    let watchlist = this.attributes['watchlist']
     
     getQuotes(watchlist)
       .then(quotes => {
+        let last_price = 0
         let speech=''
         for (var i=0;i<quotes.length;i++) {
-          speech = speech + `<say-as interpret-as="spell-out">${quotes[i].symbol}</say-as> is $${quotes[i].last_price}.`
+          last_price = (quotes[i].last_price/100)
+          speech = speech + `<say-as interpret-as="spell-out">${quotes[i].symbol}</say-as> is $${last_price}.`
         }  
         self.response.speak(`${speech}, issume me another command`) 
             .listen(`Issue me another command`)
@@ -418,7 +365,6 @@ const handlers = {
     }
   }, // End port intent
 
-
   'DescribeAccount' : function() {
     // check request
     // import port
@@ -453,21 +399,22 @@ const handlers = {
 
         for (var i=0;i<quotes.length;i++) {
 
-          profitLoss = ((quotes[i].last_price * portfolio.balance.positions[i].qty) - portfolio.balance.positions[i].costBasis)
+          profitLoss = (((quotes[i].last_price) * portfolio.balance.positions[i].qty) - (portfolio.balance.positions[i].costBasis))
 
-          totalpl += profitLoss
+          // values are stored in pennies
+
+          totalpl += (profitLoss/100)
 
           if (profitLoss > 0) {
-              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss},`
+              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss/100},`
 
-              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss},`
+              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss/100},`
 
           } else {
-              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss},`
+              speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss/100},`
 
-              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss},`
+              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss/100},`
           }
-
         }  
 
         if (totalpl > 0) {

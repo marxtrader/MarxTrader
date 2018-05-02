@@ -13,7 +13,7 @@
   
   const percisionToString = function (number, precision=2) {
     var factor = Math.pow(10, precision);
-    return (Math.round(number * factor) / factor).toFixed(precision)//.toString()
+    return (Math.round(number * factor) / factor).toFixed(precision).toString()
   }
 
   require('isomorphic-fetch');
@@ -34,6 +34,9 @@
         json.high = Math.round(parseFloat(json.high*100))
         json.low = Math.round(parseFloat(json.low*100))
         return json
+      })
+      .catch(err => {
+        console.log("error : ",err)
       })
     }
 module.exports = getQuote;
