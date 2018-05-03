@@ -3,8 +3,11 @@ var constants = {
   // App-ID. TODO: Set Your App ID
   appId : 'amzn1.ask.skill.00ba4d3f-697f-45c0-a1da-fc3a92caea14',
 
-  //  DynamoDB Table Name
+  //  DynamoDB Table Name alexa sdk
   dynamoDBTableName : 'marx-trader',
+
+  // Dynamo Table AWS sdk
+  awsdynamo : 'marx-trader-maindb'
 
   adminId : "amzn1.ask.account.AF5WEBXRUMTQKSJ6SQ2RHDAGFED3VOCK2M6DWEJPGFIA55YOJPR7RGLCI3JB3USPO6QBRMS7IUWCX3TXUNARTX3BZI3BQ54FZTK4GND4SZ3FANUZ2C2YREENB5ALEDZ7Q2N2Q56J6GUEOEFJ4JK7ORKAQ3AKSZALQYGDQQXSCS4QARW32DH2EELYJTQRBJFS7AYQ2TSVT52HTKQ",
 

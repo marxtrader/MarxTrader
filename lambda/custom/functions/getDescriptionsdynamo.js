@@ -13,8 +13,7 @@
       var params = {
           TableName: table,
           Key:{
-              "symbol": symbol,
-              "type" : 'currency'
+              "itemId": symbol
           }
       };
   
@@ -27,4 +26,4 @@
           }
       });
   }
-  getDescriptionData('btcusd')
+  getDescriptionData('avtusd')

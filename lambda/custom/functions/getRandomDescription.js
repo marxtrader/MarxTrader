@@ -16,6 +16,5 @@ const getRandomDescription = function(callback) {
   value = val[index]; // assign the random description to the return value.
   console.log(value)
 
-  callback(null,value.toLowerCase());
-}
+  callback(null,value.toLowerCase());  // alexa prefers lowercase. 
 module.exports = getRandomDescription;
