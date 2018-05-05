@@ -46,6 +46,7 @@ const handlers = {
     // Check for User Data in Session Attributes
     let speech = ''
     let userName = this.attributes['userName'];
+    //putToDynamo(this.event)
     let watchlist = this.attributes['watchlist']
     let portfolio = this.attributes['portfolio']
 

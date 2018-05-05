@@ -79,7 +79,6 @@ module.exports.setMessageType = () => {
       })
   })
 }
-
 module.exports.getMessages = () => {
   return new Promise( (resolve, reject) => {
     request.get(config.orderMgmtRestUrl+'orders/events')

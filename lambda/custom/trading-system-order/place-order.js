@@ -4,7 +4,7 @@ const backend = require('./backend')
 const createOrderObj = (orderInfo) => {
   const creationTime = Date.now()
   const custOrderId = uuidv4()
-  const price = (orderInfo.type == 'LIMIT')
+  const price = (orderInfo.type == 'MARKET')
     ? orderInfo.price
     : null
   orderInfo.instrument.attributes = ["java.util.TreeMap",{}]
@@ -60,6 +60,8 @@ function containsOrderFilledMsg(apiResponse, custOrderId) {
     if(msg.eventtype == execType) {
       if(msg.order.custOrderId == custOrderId) {
         if(msg.execution.finalState == 'FILLED') {
+          //console.log(msg)
+          orderInfo.price = msg.execution.avgPrice
           found = true
         }
       }
@@ -90,7 +92,7 @@ async function placeOrder(orderInfo) {
       }
     }
   
-    return orderFilled
+    return orderInfo
   
   } catch(err) {
     return false

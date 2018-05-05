@@ -5,13 +5,13 @@ const orderInfo = {
   side: 'BUY',
   companyId: 1,
   ownerId: 3,
-  quantity: 1000,
+  quantity: 10,
   instrument: {
     attributes: ['java.util.TreeMap',{}],
-    baseSymbol: 'ETHUSD',
+    baseSymbol: 'BTCUSD',
     exchangeid: 2,
-    id: 5,
-    symbol: 'ETHUSD',
+    id: 2,
+    symbol: 'BTCUSD',
     type: 'FOREIGNEXCHANGE',
     underlyingid: 0
   },
