@@ -78,10 +78,11 @@ const handlers = {
 
     //save in session Attributes
     if (name) {
-
+      
       this.attributes['portfolio'] = constants.initPortfolio 
       this.attributes['watchlist'] = ['btcusd', 'ethusd','ltcusd'];
       this.attributes['userName'] = name;
+      putToDynamo(params,"put")
       //this.emit('LaunchRequest')
       this.emit('AMAZON.HelpIntent');
 
