@@ -14,7 +14,7 @@ const checkWlReq = require('./functions/checkWlReq')
 const constants = require('./constants/constants');
 const sendOrder = require('./functions/sendOrder')
 
-AWS.config.update({region: "us-east-1"});
+AWS.config.update({region: "us-west-2"});
 
 exports.handler = function(event, context, callback){
   var alexa = Alexa.handler(event, context);
