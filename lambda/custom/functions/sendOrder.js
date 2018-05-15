@@ -14,6 +14,8 @@ const sendOrder = function (portfolio, order, idx, callback) {
 
     const getQuote = require('./getQuote')
 
+    order.reject = false
+
     getQuote(order.symbol)
 
     .then(quote => {
@@ -26,12 +28,14 @@ const sendOrder = function (portfolio, order, idx, callback) {
 
         if (order.side == "sell") {
             if (idx == -1) {
-                order.state = "not been filled, No shorting allowed"
+                order.state = "has not been filled, No shorting allowed"
+                order.reject = true
                 portfolio.orders.push(order)
                 callback(null, order, portfolio)
             } else {
                 if (order.qty > portfolio.balance.positions[idx].qty) {
-                    order.state = "not been filled, Your order quantity exceeds your position"
+                    order.state = "has not been filled, Your order quantity exceeds your position"
+                    order.reject = true
                     portfolio.orders.push(order)
                     callback(null, order, portfolio)
                 } 
@@ -39,7 +43,8 @@ const sendOrder = function (portfolio, order, idx, callback) {
         }
       
         if ((order.side == 'buy') && ((buyPrice*order.qty) > portfolio.balance.cash)) {
-            order.state = "not been filled, insufficient balance"
+            order.state = "has not been filled, insufficient balance"
+            order.reject = true
             portfolio.orders.push(order)
             callback(null, order, portfolio)
         }
@@ -53,7 +58,7 @@ const sendOrder = function (portfolio, order, idx, callback) {
             let pl = proceeds - cost
             order.price = sellPrice
             order.proceeds = proceeds
-            order.state = 'filled'
+            order.state = 'was filled'
 
             console.log("proceeds cost and Pl : ",proceeds, cost, pl)
 
@@ -80,7 +85,6 @@ const sendOrder = function (portfolio, order, idx, callback) {
                 // reset the empty portfolio flag to true
                 if (portfolio.balance.positions.length == 0) {
                     portfolio.empty = true
-                    console.log("flag set to true")
                 } 
                 //else {
                 //     console.log("ugg..can't be false : ",portfolio.balance.positions)
@@ -94,9 +98,6 @@ const sendOrder = function (portfolio, order, idx, callback) {
             // get the ask price and calculate the cost of the trade.
             order.price = (buyPrice)
             order.cost = (buyPrice*order.qty)
-            console.log("buy price, cost : ",buyPrice, order.cost)
-            console.log("type of : ",typeof(buyPrice), typeof(order.cost))
-            console.log("Type of costBasis : ",portfolio.balance.costBasis)
 
             if ((idx == -1) && (portfolio.empty == true)) {
 
@@ -107,18 +108,16 @@ const sendOrder = function (portfolio, order, idx, callback) {
                     "costBasis":order.cost
                 }
 
-                order.state = 'filled'
+                order.state = 'was filled'
                 portfolio.empty = false
                 portfolio.balance.cash -= order.cost
                 portfolio.balance.costBasis += order.cost
-                //portfolio.balance.costBasis = parseFloat(portfolio.balance.costBasis)
-                console.log("type of costBasis : ",typeof(portfolio.balance.costBasis))
                 portfolio.balance.positions.push(newPosition)
                 portfolio.orders.push(order)
                 callback(null, order, portfolio)
 
             } else if ((order.side == 'buy') && (idx != -1)) {
-                order.state = 'filled'
+                order.state = 'was filled'
                 portfolio.balance.positions[idx].qty += order.qty
                 portfolio.balance.costBasis += (order.cost)
                 portfolio.balance.cash -= (order.cost)
@@ -135,7 +134,7 @@ const sendOrder = function (portfolio, order, idx, callback) {
                     "costBasis":order.cost
                 }
 
-                order.state = 'filled'
+                order.state = 'was filled'
                 portfolio.empty = false
                 portfolio.balance.cash -= newPosition.costBasis
                 portfolio.balance.costBasis += (newPosition.costBasis)

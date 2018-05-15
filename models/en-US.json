@@ -40,11 +40,11 @@
                         }
                     ],
                     "samples": [
-                        "tell my crypto guru to get me the price of {symbol}",
-                        "ask my crypto guru to tell me the price of {symbol}",
-                        "ask my crypto guru what is the price of {symbol}",
-                        "ask my crypto guru to get me the quote of {symbol}",
-                        "ask my crypto guru to tell me the quote of {symbol}",
+                        "tell my marx trader to get me the price of {symbol}",
+                        "ask my marx trader to tell me the price of {symbol}",
+                        "ask my marx trader what is the price of {symbol}",
+                        "ask my marx trader to get me the quote of {symbol}",
+                        "ask my marx trader to tell me the quote of {symbol}",
                         "what is the quote of {symbol}",
                         "what is the market in {symbol}",
                         "what is {symbol} trading at",
@@ -72,31 +72,31 @@
                         "Get me the details on {symbol}",
                         "Give me the details on {symbol}",
                         "tell me the details on {symbol}",
-                        "ask my crypto guru what is the detailed quote for {symbol}",
-                        "ask my crypto guru to tell me what the detailed quote is in {symbol}",
-                        "ask my crypto guru what is the detailed quote on {symbol}",
-                        "ask my crypto guru to give me the detailed quote on {symbol}",
-                        "ask my crypto guru to Get me the detail on {symbol}",
-                        "ask my crypto guru to Give me the detail on {symbol}",
-                        "ask my crypto guru to tell me the detail on {symbol}",
-                        "ask my crypto guru what is the detail on {symbol}",
-                        "ask my crypto guru what is the detail of {symbol}",
-                        "ask my crypto guru to Get me the details on {symbol}",
-                        "ask my crypto guru to Give me the details on {symbol}",
-                        "ask my crypto guru to tell me the details on {symbol}",
-                        "ask my crypto guru what are the details are on {symbol}",
-                        "tell my crypto guru what is the detailed quote for {symbol}",
-                        "tell my crypto guru to tell me what the detailed quote is in {symbol}",
-                        "tell my crypto guru what is the detailed quote on {symbol}",
-                        "tell my crypto guru to give me the detailed quote on {symbol}",
-                        "tell my crypto guru to Get me the detail on {symbol}",
-                        "tell my crypto guru to Give me the detail on {symbol}",
-                        "tell my crypto guru to tell me the detail on {symbol}",
-                        "tell my crypto guru what is the detail on {symbol}",
-                        "tell my crypto guru what is the detail of {symbol}",
-                        "tell my crypto guru to Get me the details on {symbol}",
-                        "tell my crypto guru to Give me the details on {symbol}",
-                        "tell my crypto guru to tell me the details on {symbol}"
+                        "ask my marx trader what is the detailed quote for {symbol}",
+                        "ask my marx trader to tell me what the detailed quote is in {symbol}",
+                        "ask my marx trader what is the detailed quote on {symbol}",
+                        "ask my marx trader to give me the detailed quote on {symbol}",
+                        "ask my marx trader to Get me the detail on {symbol}",
+                        "ask my marx trader to Give me the detail on {symbol}",
+                        "ask my marx trader to tell me the detail on {symbol}",
+                        "ask my marx trader what is the detail on {symbol}",
+                        "ask my marx trader what is the detail of {symbol}",
+                        "ask my marx trader to Get me the details on {symbol}",
+                        "ask my marx trader to Give me the details on {symbol}",
+                        "ask my marx trader to tell me the details on {symbol}",
+                        "ask my marx trader what are the details are on {symbol}",
+                        "tell my marx trader what is the detailed quote for {symbol}",
+                        "tell my marx trader to tell me what the detailed quote is in {symbol}",
+                        "tell my marx trader what is the detailed quote on {symbol}",
+                        "tell my marx trader to give me the detailed quote on {symbol}",
+                        "tell my marx trader to Get me the detail on {symbol}",
+                        "tell my marx trader to Give me the detail on {symbol}",
+                        "tell my marx trader to tell me the detail on {symbol}",
+                        "tell my marx trader what is the detail on {symbol}",
+                        "tell my marx trader what is the detail of {symbol}",
+                        "tell my marx trader to Get me the details on {symbol}",
+                        "tell my marx trader to Give me the details on {symbol}",
+                        "tell my marx trader to tell me the details on {symbol}"
                     ]
                 },
                 {
@@ -151,8 +151,8 @@
                     "slots": [],
                     "samples": [
                         "brief me",
-                        "ask my crypto guru to brief me",
-                        "tell my crypto guru to brief me"
+                        "ask my marx trader to brief me",
+                        "tell my marx trader to brief me"
                     ]
                 },
                 {
@@ -198,8 +198,9 @@
                     ],
                     "samples": [
                         "{side} {quantity} {symbol}",
-                        "ask my crypto guru to {side} {quantity} {symbol}",
-                        "tell my crypto guru to {side} {quantity} {symbol}"
+                        "ask my marx trader to {side} {quantity} {symbol}",
+                        "{side} me {quantity} {symbol}",
+                        "tell my marx trader to {side} {quantity} {symbol}"
                     ]
                 },
                 {
@@ -581,6 +582,8 @@
                                 "value": "sngusd",
                                 "synonyms": [
                                     "Singular",
+                                    "singuler",
+                                    "snow gem",
                                     "dtb",
                                     "singular dtb"
                                 ]

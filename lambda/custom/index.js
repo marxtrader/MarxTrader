@@ -14,7 +14,7 @@ const checkWlReq = require('./functions/checkWlReq')
 const constants = require('./constants/constants');
 const sendOrder = require('./functions/sendOrder')
 
-AWS.config.update({region: "us-west-2"});
+AWS.config.update({region: "us-east-1"});
 
 exports.handler = function(event, context, callback){
   var alexa = Alexa.handler(event, context);
@@ -52,16 +52,11 @@ const handlers = {
 
     if (userName) {
       // Welcome User Back by Name
-      speech = (`lets go ${userName} ,issue me a command`);
+      this.emit(':ask', `lets go ${userName} ,issue me a command`, `issue me a command`);
     } else {
       // Welcome User for the First Time
-      speech = (` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`);
+      this.emit(':ask',` welcome to the marx trader alexa skill. This portal provides real time quotes on a host of crypto coins, smart contracts and other blockchain implimentations. Before we provide you with a short too torial on the skills yousage, we would like your name, in order to provide a superior customer experience. Please provide your name by saying, my name is, and then your name.`,`Please provide your name by saying, my name is, and then your name.`);
     }
-    self.response.speak(`${speech}`)
-        .listen( `issue me another command`)
-        .cardRenderer(`${speech}`)
-        .shouldEndSession(false)
-    self.emit(':responseReady')
   },
 
   'NameCapture' : function() {
@@ -82,7 +77,6 @@ const handlers = {
       this.attributes['portfolio'] = constants.initPortfolio 
       this.attributes['watchlist'] = ['btcusd', 'ethusd','ltcusd'];
       this.attributes['userName'] = name;
-      putToDynamo(params,"put")
       //this.emit('LaunchRequest')
       this.emit('AMAZON.HelpIntent');
 
@@ -91,8 +85,7 @@ const handlers = {
     }
     self.response.speak(`${speech}`)
         .listen( `Tell me your name by saying: My name is, and then your name.`)
-        .cardRenderer(`${speech}`)
-        .shouldEndSession(false)
+        .shouldEndSession(false);
     self.emit(':responseReady')
   },
 
@@ -106,7 +99,6 @@ const handlers = {
     console.log('Quote intent: ',JSON.stringify(this.event))
     let self = this;
     let speech =''
-    let cardSpeech=''
 
       // returns true if resolutions exist
       if (checkQuoteReq(this.event)) {
@@ -119,10 +111,10 @@ const handlers = {
             .then(quote => {
               let last_price = (quote.last_price/100)
               speech = ( `<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${last_price}, issue me another command. `)
-              cardSpeech = (`${quote.symbol} is $${last_price}, issue me another command. `)
+              //cardSpeech = (`${quote.symbol} is $${last_price}, issue me another command. `)
               self.response.speak(speech)
                   .listen(`issue me a command`)
-                  .shouldEndSession(false)
+                  .shouldEndSession(false);
               self.emit(':responseReady')
             })
             .catch(err => {
@@ -130,17 +122,17 @@ const handlers = {
               self.emit(':ask',`sorry, we do not cover that instrument, try again or ask for help`,`try again or ask for help`)
             });
       } else {
-        this.emit(':ask',`sorry, we do not cover that instrument, try again or ask for help`,`try again or ask for help`)
+        this.emit(':ask',`sorry, we were not able to determine the instrument, try again or ask for help`,`try again or ask for help`)
       }
   },
 
   'DetailedQuoteIntent' : function() {
       console.log('Detailed Quote intent: ',JSON.stringify(this.event))  
-      
+      let self=this;
       // returns true if resolutions exist
       if (checkQuoteReq(this.event) ) {
 
-          let self=this;
+
           let symbol=(this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.id);
           let symbolName = this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.name;   
 
@@ -154,22 +146,22 @@ const handlers = {
 
               self.response.speak(`<say-as interpret-as="spell-out">${quote.symbol}</say-as> is $${bid} and offered at $${ask}. the high is $${high}, the low, is $${low}. on Volume of ${quote.volume}. give me another command `)
                   .listen(`give me another command `)
-                  .cardRenderer(`${quote.symbol} is $${bid} and offered at $${ask}. the high is $${high}, the low, is $${low}. on Volume of ${quote.volume}. give me another command `)
-                  .shouldEndSession(false)
+                  //.cardRenderer(`${quote.symbol} is $${bid} and offered at $${ask}. the high is $${high}, the low, is $${low}. on Volume of ${quote.volume}. give me another command `)
+                  .shouldEndSession(false);
               self.emit(':responseReady')
             })
             .catch(err => {
-              self.response.speak(`Something went wrong and we could not fulfill your request, try issuing another command.`)
+              self.response.speak(`sorry, we do not cover that instrument, try issuing another command, or ask for help.`)
                   .listen(`issue a command, or ask for help.`)
-                  .cardRenderer(`Something went wrong and we could not fulfill your request, try issuing another command.`)
-                  .shouldEndSession(false)
+                  //.cardRenderer(`Something went wrong and we could not fulfill your request, try issuing another command.`)
+                  .shouldEndSession(false);
               self.emit(':responseReady')
             })
       } else {
-        self.response.speak(`Something went wrong and we could not fulfill your request, try issuing another command.`)
+        self.response.speak(`sorry, we were not able to determine the instrument, try issuing another command, or ask for help.`)
             .listen(`issue a command, or ask for help.`)
-            .cardRenderer((`Something went wrong and we could not fulfill your request, try issuing another command.`))
-            .shouldEndSession(false)
+            //.cardRenderer((`Something went wrong and we could not fulfill your request, try issuing another command.`))
+            .shouldEndSession(false);
         self.emit(':responseReady')
       }
   },
@@ -177,28 +169,26 @@ const handlers = {
   'DescribeIntent' : function() {
     console.log('Describe intent: ',JSON.stringify(this.event))
 
+    let self=this;
+
     // returns true if resolutions exist
     if (checkQuoteReq(this.event) ) {      
 
         let getDescriptions = require('./functions/getDescriptions')
-        let self=this;
+
         let symbol=this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.id
+
         let symbolName = this.event.request.intent.slots.symbol.resolutions.resolutionsPerAuthority[0].values[0].value.name;
 
-        getDescriptions(symbol, function(err,speech,cardSpeech) {      
+        getDescriptions(symbol, function(err,speech) {      
           if (err) {
-            self.emit('DescribeRandomIntent');
+            self.emit(':ask', `sorry, we were unable to find that instrument, try again or ask for help.`,`try again or ask for help`);
           } else {
-            self.emit(':askWithCard', speech + `. issue me another command`,`try again or ask for help`,'crypto description',cardSpeech)
-            // self.response.speak(speech)
-            //     .cardRenderer(cardSpeech)
-            //     .listen(`try again or ask for help`)
-            //     .shouldEndSession(false)
-            // self.emit(':responseReady')
+            self.emit(':ask', speech + `. issue me another command`,`try again or ask for help`)
           }
         })
     } else {
-      this.emit('DescribeRandomIntent')
+      self.emit(':ask', `sorry, we were unable to find that instrument, try again or ask for help.`,`try again or ask for help`);
     }
   },
   
@@ -217,10 +207,10 @@ const handlers = {
         } else {
           speech=(`sorry, that coin does not exist in our database, issue me another command`)
         }
-        self.response.speak(`${speech}, issue me another command`)
+        self.response.speak(`${speech}`)
             .listen(`issue me another command`)
-            .cardRenderer(data, `issue me another command`)
-            .shouldEndSession(false)
+            //.cardRenderer(data, `issue me another command`)
+            .shouldEndSession(false);
         self.emit(':responseReady')
       }
     })
@@ -242,8 +232,8 @@ const handlers = {
         }  
         self.response.speak(`${speech}, issume me another command`) 
             .listen(`Issue me another command`)
-            .cardRenderer(`${speech}, issue me another command`)
-            .shouldEndSession(false)
+            //.cardRenderer(`${speech}, issue me another command`)
+            .shouldEndSession(false);
         self.emit(':responseReady'          
         )
     })
@@ -252,6 +242,7 @@ const handlers = {
   'EditWatchList' : function() { 
     console.log("Event  : ",JSON.stringify(this.event))
     let speech =``
+
     if (checkWlReq(this.event)) { // check for a valid request with all parameters needed present
     
         let self = this;
@@ -261,46 +252,34 @@ const handlers = {
 
         const action = this.event.request.intent.slots.action.resolutions.resolutionsPerAuthority[0].values[0].value.name;
 
-        this.attributes['symbol'] = symbol
-        this.attributes['action'] = action
-
         var idx = watchlist.indexOf(symbol);
 
         if ((idx == -1 ) && (action == 'remove')) {
-            action = 'rejectremove'
+          speech = "That Symbol is not in the watchlist, try another command or ask for help"
 
         } else if ((idx != -1 ) && (action == 'add')) {
-            action = 'rejectadd'
+          speech = "that symbol is already in your watchlist, try another command or ask for help"
 
         } else if ((idx == -1 ) && (action == 'add')) {
             // add symbol to watch list
+            speech = `you successfully added,<say-as interpret-as="spell-out">${symbol}</say-as> to your watchlist, issue me another command`
             watchlist.push(symbol)
             self.attributes['watchlist'] = watchlist
 
         } else if ((idx != -1 ) && (action == 'remove')) {
             // remove symbol from watch list
+            speech = `you successfully removed,<say-as interpret-as="spell-out">${symbol}</say-as> from your watchlist, issue me another command`
             watchlist.splice(idx,1)
             self.attributes['watchlist'] = watchlist
         }
     } else {
       this.emit('Unhandled') // ill formated request
     }
-    switch (action) {
-      case 'rejectremove' :
-        speech = (':ask',"That Symbol is not in the watchlist, try another command or ask for help", "try another command or ask for help")
-      case 'rejectadd' :
-        speech = (':ask', "that symbol is already in your watchlist, try another command or ask for help", "try another command or ask for help")
-      case 'add' :
-        speech = (':ask', `you successfully added,<say-as interpret-as="spell-out">${symbol}</say-as> to your watchlist, issue me another command`,`issue me another command`)
-        break;
-      case 'remove' :
-        speech =(':ask', `you successfully removed,<say-as interpret-as="spell-out">${symbol}</say-as> from your watchlist, issue me another command`,`issue me another command`)
-        break;
-    }
+    
     this.response.speak(`${speech}`)                                        
         .listen(`issue me another command`)
-        .cardRenderer( `${speech}`)
-        .shouldEndSession(false)
+        //.cardRenderer( `${speech}`)
+        .shouldEndSession(false);
     this.emit(':responseReady')
   }, // End Edit Watchlist
 
@@ -347,22 +326,29 @@ const handlers = {
                   .listen(`issue me another command`)
                   .cardRenderer(` ${err} , issue me another command `)
                   .shouldEndSession(false)
-                self.emit(':responseReady') }
-            else {
+                self.emit(':responseReady') 
+            } else {
                   let price = order.price/100
                   self.attributes['portfolio'] = portfolio
-                  self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> was ${order.state} at a price of $${price}, issue me another command `)
-                    .cardRenderer(`your order ${order.side} ${order.qty} ${order.symbol} was ${order.state}  at a price of $${price}, issue me another command `)
-                    .listen(`issue me another command`)
-                    .shouldEndSession(false)
-                  self.emit(':responseReady')
+
+                  if (order.reject) {
+                    self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> ${order.state}. issue me another command `)
+                      .listen(`issue me another command`)
+                      .shouldEndSession(false);
+                    self.emit(':responseReady')
+                  } else {
+                    self.response.speak(`your order ${order.side} ${order.qty} <say-as interpret-as="spell-out">${order.symbol}</say-as> ${order.state} at a price of $${price}. issue me another command`)
+                        .listen(`issue me another command`)
+                        .shouldEndSession(false);
+                    self.emit(':responseReady')
+                  }                    
             }
           })
     } else {
       this.response.speak(`sorry, you did not provide enough information to provide a response., try again or ask for help`) 
           .listen(`try again or ask for help`)
-          .cardRenderer(`sorry, you did not provide enough information to provide a response., try again or ask for help`)
-          .shouldEndSession(false)
+          //.cardRenderer(`sorry, you did not provide enough information to provide a response., try again or ask for help`)
+          .shouldEndSession(false);
       this.emit(':responseReady')
     }
   }, // End port intent
@@ -397,7 +383,7 @@ const handlers = {
 
         speech = speech + ` your balance is $${cash} in cash, with a cost basis of $${costBasis} on your portfolio. your booked profit or loss is $${bookedpl}. `
 
-        cardSpeech = cardSpeech + ` your balance is $${cash} in cash with a cost basis of $${costBasis} on your portfolio. your booked profit or loss is $${bookedpl}. `
+        //cardSpeech = cardSpeech + ` your balance is $${cash} in cash with a cost basis of $${costBasis} on your portfolio. your booked profit or loss is $${bookedpl}. `
 
         for (var i=0;i<quotes.length;i++) {
 
@@ -410,12 +396,12 @@ const handlers = {
           if (profitLoss > 0) {
               speech = speech + ` on your position of ${portfolio.balance.positions[i].qty}  <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a profit of $${profitLoss/100},`
 
-              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss/100},`
+              //cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty}  ${quotes[i].symbol} you have a profit of $${profitLoss/100},`
 
           } else {
               speech = speech + ` on your position of ${portfolio.balance.positions[i].qty} <say-as interpret-as="spell-out">${quotes[i].symbol}</say-as>, you have a loss of $${profitLoss/100},`
 
-              cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss/100},`
+              //cardSpeech = cardSpeech + ` on your position of ${portfolio.balance.positions[i].qty} ${quotes[i].symbol} you have a loss of $${profitLoss/100},`
           }
         }  
 
@@ -429,8 +415,8 @@ const handlers = {
         
         self.response.speak(` ${speech}. issue me another command `)
           .listen(`issue me another command`)
-          .cardRenderer(` ${cardSpeech} , issue me another command `)
-          .shouldEndSession(false)
+          //.cardRenderer(` ${cardSpeech} , issue me another command `)
+          .shouldEndSession(false);
         self.emit(':responseReady')
     })
   },
@@ -444,7 +430,7 @@ const handlers = {
 
     this.response.speak(`${responseSpeech}`)
         .listen(`if you need to hear it again, just say I need help `)
-        .cardRenderer(`Help`,`${responseSpeech}`)
+        //.cardRenderer(`Help`,`${responseSpeech}`)
         .shouldEndSession(false)
     this.emit(':responseReady')
   },

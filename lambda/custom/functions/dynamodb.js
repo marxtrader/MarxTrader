@@ -56,7 +56,7 @@ const putToDynamo = function ( params, action, cb) { //,cb) {
     } // end switch
 } // end function
 
-var table = "marx-trader-users";
+var table = "marx-trader";
 
 var upParams = {
     TableName: table,
@@ -147,12 +147,18 @@ switch (flag) {
         })
         break;
     case 4 :
-        putToDynamo(scanparams,"scan", function(err, data) {
+    let standings = [];
+    let total_cash = 0;
+        putToDynamo(scanparams,"scan", function(err, json) {
             if (err) {
                 console.log("err : ",err)
             } else {
-                console.log("data : ",data)
+               for(let i=0;i<json.Items.length;i++) {
+                   total_cash += json.Items[i].mapAttr.portfolio.balance.bookedpl
+               }
+               console.log('total cash : ',total_cash/100)
             }
         });
 }
 
+//putToDynamo(scanparams,"scan")

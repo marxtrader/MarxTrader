@@ -1,11 +1,18 @@
 {
   "manifest": {
+    "privacyAndCompliance" : {
+      "allowsPurchases"	: false,
+      "usesPersonalInfo" : false,
+      "isChildDirected"	: false,
+      "isExportCompliant" :	true,
+      "containsAds" : false
+    },
     "publishingInformation": {
       "locales": {
         "en-US": {
           "summary": "Provides real time quotes and paper trading on several crypto instruments",
           "examplePhrases": [
-            "Alexa open my my porfolio manager",
+            "Alexa open marx trader",
             "What is the current price of bitcoin",
             "give me a detailed quote on ethereum"
           ],
@@ -16,7 +23,8 @@
       "isAvailableWorldwide": true,
       "testingInstructions": "Sample Testing Instructions.",
       "category": "BUSINESS_AND_FINANCE",
-      "distributionCountries": []
+      "distributionCountries": [],
+      "distributionMode" : "PUBLIC"
     },
     "apis": {
       "custom": {
