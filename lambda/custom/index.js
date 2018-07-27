@@ -1,3 +1,9 @@
+// This skill attempts to educate users in cryptos. 
+// Todos
+// find a better way to communicate available instruments.
+// develop a natural speech approach for retrieving that information
+// create an adminstrative intent to aggregate user data.
+
 'use strict'; 
 
 const Alexa= require("alexa-sdk");
